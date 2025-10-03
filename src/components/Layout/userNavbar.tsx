@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search, ShoppingCart, MapPin } from "lucide-react";
 import useGeolocation from '../../hooks/useGeolocation'
+import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -10,7 +11,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header className="bg-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between text-black">
+      <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between text-black">
         {/* Left: Logo + Location */}
         <div className="flex items-center gap-6">
           <h1 className="text-2xl font-extrabold tracking-wide text-gray-800">Foodie</h1>
@@ -19,7 +20,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 cursor-pointer bg-gray-300 px-3 py-1 rounded-full">
             <MapPin className="w-4 h-4 text-gray-700" />
             <span className="font-medium text-gray-800">
-              {location || "Fetching location..."}
+              {location.split(",")[0].trim() || "Fetching location..."}
             </span>
           </div>
         </div>
@@ -39,6 +40,7 @@ const Navbar: React.FC = () => {
         {/* Right: Cart + Profile */}
         <div className="flex items-center gap-6 relative">
           {/* Cart */}
+          <Link to="/cart" >
           <div className="flex items-center gap-2 cursor-pointer hover:scale-105 transition">
             {/* Icon with badge */}
             <div className="relative">
@@ -50,6 +52,7 @@ const Navbar: React.FC = () => {
 
             <span className="font-medium text-gray-800">My Orders</span>
           </div>
+          </Link>
 
 
           {/* Profile Circle */}

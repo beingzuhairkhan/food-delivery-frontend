@@ -1,20 +1,34 @@
 import { useState, useEffect } from "react";
 
-const useGeolocation = () => {
+interface GeolocationData {
+  location: string;
+  coords: { lat: number; lon: number } | null;
+}
+
+const useGeolocation = (): GeolocationData => {
   const [location, setLocation] = useState<string>("");
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
 
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+          setCoords({ lat: latitude, lon: longitude });
+
           try {
-            // reverse geocode using free API (OpenStreetMap Nominatim)
             const res = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const data = await res.json();
-            setLocation(data.address.city || data.address.town || "Unknown");
+            // Extract first part of display_name or fallback to city
+            const loc =
+              data.display_name  ||
+              data.address?.city ||
+              "Unknown";
+            setLocation(loc);
           } catch (err) {
             console.error(err);
             setLocation("Location unavailable");
@@ -29,7 +43,7 @@ const useGeolocation = () => {
     }
   }, []);
 
-  return location;
+  return { location, coords };
 };
 
 export default useGeolocation;

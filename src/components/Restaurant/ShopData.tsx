@@ -23,6 +23,7 @@ const ShopData = () => {
         image:
           "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg",
       },
+      
     ],
   };
 
@@ -110,9 +111,10 @@ const ShopData = () => {
 
                 {/* Actions */}
                 <div className="absolute bottom-3 right-3 flex gap-3 text-gray-500">
+                 <Link to="/edit-food-item/:id" >
                   <button className="hover:text-orange-500 transition">
                     <FiEdit size={18} />
-                  </button>
+                  </button></Link>
                   <button className="hover:text-red-500 transition">
                     <FiTrash size={18} />
                   </button>
