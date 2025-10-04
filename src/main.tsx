@@ -7,9 +7,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react'; 
 import { LOGIN_USER , REGISTER_USER} from './graphql/mutations/auth.graphql.ts';
 import { GET_MENU_ITEMS } from './graphql/queries/menu.graphql.ts';
-// import { request } from 'http';
-// import { PassThrough } from 'stream';
-// import { register } from 'module';
+
+
+import { CartProvider } from './contexts/CartContext.tsx';
+
 
 // 1. Define the mock menu items data (reusable)
 const mockMenuItems = [
@@ -227,7 +228,10 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       {/* 2. Use MockedProvider instead of ApolloProvider */}
       <MockedProvider mocks={mocks}>
+        <CartProvider>
+
         <App />
+        </CartProvider>
       </MockedProvider>
     </BrowserRouter>
   </StrictMode>
