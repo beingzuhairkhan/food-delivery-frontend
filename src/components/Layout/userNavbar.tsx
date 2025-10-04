@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import { Search, ShoppingCart, MapPin } from "lucide-react";
 import useGeolocation from '../../hooks/useGeolocation'
 import { Link } from "react-router-dom";
+import { useCart } from '../../contexts/CartContext.tsx';
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // use custom geolocation hook
   const location = useGeolocation();
+
+  // use cart context
+  const { getItemCount } = useCart();
+  const itemCount = getItemCount();
 
   return (
     <header className="bg-gray-200 shadow-sm">
@@ -45,12 +50,14 @@ const Navbar: React.FC = () => {
             {/* Icon with badge */}
             <div className="relative">
               <ShoppingCart className="text-gray-800 w-6 h-6" />
-              <span className="absolute -top-3 -right-3 bg-orange-500 text-white font-bold text-xs px-2 py-0.5 rounded-full">
-                0
-              </span>
+              {itemCount > 0 && (
+                <span className="absolute -top-3 -right-3 bg-orange-500 text-white font-bold text-xs px-2 py-0.5 rounded-full">
+                  {itemCount}
+                </span>
+              )}
             </div>
 
-            <span className="font-medium text-gray-800">My Orders</span>
+            <span className="font-medium text-gray-800">Cart</span>
           </div>
           </Link>
 

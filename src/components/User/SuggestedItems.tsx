@@ -1,6 +1,7 @@
 import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useQuery } from "@apollo/client/react";
 import { GET_MENU_ITEMS } from "../../graphql/queries/menu.graphql.ts";
+import { useCart } from "../../contexts/CartContext.tsx";
 
 interface MenuItem {
   id: string;
@@ -21,6 +22,7 @@ interface MenuItemsData {
 
 const SuggestedItems = () => {
   const { loading, error, data } = useQuery<MenuItemsData>(GET_MENU_ITEMS);
+  const { addItemToCart } = useCart();
 
   if (loading) return (
     <div className="my-10 px-4 max-w-4xl mx-auto">
@@ -48,9 +50,9 @@ const SuggestedItems = () => {
       <h2 className="text-2xl font-bold mb-6"> Suggested Items</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {availableItems.map((item: MenuItem, index: number) => (
+        {availableItems.map((item: MenuItem) => (
           <div
-            key={index}
+            key={item.id}
             className="bg-white rounded-2xl shadow-md hover:shadow-2xl transform hover:scale-105 transition-all duration-300 cursor-pointer"
           >
             {/* Food Image */}
@@ -89,7 +91,10 @@ const SuggestedItems = () => {
               </div>
 
               {/* Add to Cart Button */}
-              <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+              <button 
+                onClick={() => addItemToCart(item)}
+                className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+              >
                 <FaShoppingCart />
                 Add to Cart
               </button>
