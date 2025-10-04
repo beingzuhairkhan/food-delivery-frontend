@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 cursor-pointer bg-gray-300 px-3 py-1 rounded-full">
             <MapPin className="w-4 h-4 text-gray-700" />
             <span className="font-medium text-gray-800">
-              {location.split(",")[0].trim() || "Fetching location..."}
+              {location.location.split(",")[0].trim() || "Fetching location..."}
             </span>
           </div>
         </div>
