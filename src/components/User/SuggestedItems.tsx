@@ -1,65 +1,61 @@
-import React from "react";
 import { FaStar, FaShoppingCart } from "react-icons/fa";
+import { useQuery } from "@apollo/client/react";
+import { GET_MENU_ITEMS } from "../../graphql/queries/menu.graphql.ts";
 
-const items = [
-  {
-    name: "Corn Pizza",
-    price: 199,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Veg",
-    rating: 4.5,
-  },
-  {
-    name: "Chicken Burger",
-    price: 99,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Non-Veg",
-    rating: 4,
-  },
-  {
-    name: "Burger",
-    price: 99,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Veg",
-    rating: 4.2,
-  },
-  {
-    name: "Samosa (2 pieces)",
-    price: 49,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Veg",
-    rating: 4.8,
-  },
-  {
-    name: "Paneer Roll",
-    price: 129,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Veg",
-    rating: 4.6,
-  },
-  {
-    name: "Chicken Tandoori",
-    price: 249,
-    image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-    veg: "Non-Veg",
-    rating: 4.3,
-  },
-];
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  imageUrl: string;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isGlutenFree: boolean;
+  isAvailable: boolean;
+}
+
+interface MenuItemsData {
+  menuItems: MenuItem[];
+}
 
 const SuggestedItems = () => {
+  const { loading, error, data } = useQuery<MenuItemsData>(GET_MENU_ITEMS);
+
+  if (loading) return (
+    <div className="my-10 px-4 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Suggested Items</h2>
+      <div className="flex justify-center items-center h-32">
+        <div className="text-lg text-gray-600">Loading suggested items...</div>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="my-10 px-4 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Suggested Items</h2>
+      <div className="flex justify-center items-center h-32">
+        <div className="text-lg text-red-600">Error loading items: {error.message}</div>
+      </div>
+    </div>
+  );
+
+  // Filter only available items and limit to 6 for suggested items
+  const availableItems = data?.menuItems?.filter((item: MenuItem) => item.isAvailable)?.slice(0, 6) || [];
+
   return (
     <div className="my-10 px-4 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-6"> Suggested Items</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {items.map((item, index) => (
+        {availableItems.map((item: MenuItem, index: number) => (
           <div
             key={index}
             className="bg-white rounded-2xl shadow-md hover:shadow-2xl transform hover:scale-105 transition-all duration-300 cursor-pointer"
           >
             {/* Food Image */}
             <img
-              src={item.image}
+              src={item.imageUrl}
               alt={item.name}
               className="w-full h-32 object-cover rounded-t-2xl"
             />
@@ -80,15 +76,15 @@ const SuggestedItems = () => {
               <div className="flex items-center justify-between mb-3">
                 <span
                   className={`text-sm font-medium ${
-                    item.veg === "Veg" ? "text-green-600" : "text-red-600"
+                    item.isVegetarian ? "text-green-600" : "text-red-600"
                   }`}
                 >
-                  {item.veg}
+                  {item.isVegetarian ? "Veg" : "Non-Veg"}
                 </span>
 
                 <div className="flex items-center text-yellow-500 text-sm">
                   <FaStar className="mr-1" />
-                  {item.rating}
+                  {(Math.random() * (5.0 - 3.5) + 3.5).toFixed(1)}
                 </div>
               </div>
 
