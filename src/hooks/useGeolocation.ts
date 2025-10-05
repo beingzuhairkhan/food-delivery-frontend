@@ -6,41 +6,38 @@ interface GeolocationData {
 }
 
 const useGeolocation = (): GeolocationData => {
-  const [location, setLocation] = useState<string>("");
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
-    null
-  );
+  const [location, setLocation] = useState<string>(""); 
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setCoords({ lat: latitude, lon: longitude });
-
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await res.json();
-            // Extract first part of display_name or fallback to city
-            const loc =
-              data.display_name  ||
-              data.address?.city ||
-              "Unknown";
-            setLocation(loc);
-          } catch (err) {
-            console.error(err);
-            setLocation("Location unavailable");
-          }
-        },
-        () => {
-          setLocation("Location blocked");
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
       setLocation("Geolocation not supported");
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoords({ lat: latitude, lon: longitude });
+
+        try {
+          // Call your backend proxy
+          const res = await fetch(`/api/geolocation?lat=${latitude}&lon=${longitude}`);
+          if (!res.ok) throw new Error(`Failed to fetch location: ${res.status}`);
+
+          const data = await res.json();
+          const loc = data.display_name || data.address?.city || "Unknown";
+          setLocation(loc);
+        } catch (err) {
+          console.error("Geolocation error:", err);
+          setLocation("Location unavailable");
+        }
+      },
+      (error) => {
+        console.error("Geolocation blocked:", error);
+        setLocation("Location blocked");
+      }
+    );
   }, []);
 
   return { location, coords };

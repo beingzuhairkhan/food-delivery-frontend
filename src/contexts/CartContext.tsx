@@ -1,6 +1,7 @@
 import { createContext, useState, useContext } from 'react';
 import type { ReactNode } from 'react';
-
+import { useAuth } from './AuthContext';
+import useGeolocation from '../hooks/useGeolocation'
 // Define the MenuItem interface to match our GraphQL schema
 export interface MenuItem {
   id: string;
@@ -34,23 +35,48 @@ interface CartContextType {
 // Create the context with a default value
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+
+
 // Create the provider component
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const {user} = useAuth()
+  const { location, coords } = useGeolocation();
+  console.log("Lo",location)
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const addItemToCart = (itemToAdd: MenuItem) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === itemToAdd.id);
-      if (existingItem) {
-        // If item already exists, just increase the quantity
-        return prevItems.map(item =>
-          item.id === itemToAdd.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
+ const addItemToCart = (itemToAdd: MenuItem,) => {
+  console.log("cart", itemToAdd);
+
+  setCartItems(prevItems => {
+    const existingItem = prevItems.find(item => item.id === itemToAdd.id);
+    let updatedCart;
+
+    if (existingItem) {
+      // If item already exists, just increase the quantity
+      updatedCart = prevItems.map(item =>
+        item.id === itemToAdd.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
       // Otherwise, add the new item with quantity 1
-      return [...prevItems, { ...itemToAdd, quantity: 1 }];
-    });
-  };
+      updatedCart = [...prevItems, { ...itemToAdd, quantity: 1 }];
+    }
+
+    // 🔹 Store simplified data in localStorage
+    const simplifiedCart = updatedCart.map(item => ({
+      foodName: item.name,
+      count: item.quantity,
+      totalPrice: item.price * item.quantity,
+      userId: user?._id,
+      foodId:item.id
+    }));
+
+    localStorage.setItem("cartData", JSON.stringify(simplifiedCart));
+
+    return updatedCart;
+  });
+};
 
   const removeItemFromCart = (id: string) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== id));

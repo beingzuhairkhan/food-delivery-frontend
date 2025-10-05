@@ -2,6 +2,7 @@ import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useQuery } from "@apollo/client/react";
 import { GET_RECOMMENDED_ITEMS } from "../../graphql/queries/getRestaurant.queries.ts";
 import { useCart } from "../../contexts/CartContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
 interface Restaurant {
   _id: string;
@@ -29,6 +30,8 @@ interface RecommendedItemsData {
 const SuggestedItems = () => {
   const { loading, error, data } = useQuery<RecommendedItemsData>(GET_RECOMMENDED_ITEMS);
   const { addItemToCart } = useCart();
+  const {user} = useAuth();
+  
 
   if (loading) return (
     <div className="my-10 px-4 max-w-4xl mx-auto">
@@ -129,7 +132,7 @@ const SuggestedItems = () => {
                     isVegetarian: item.type === 'veg',
                     isAvailable: true
                   };
-                  addItemToCart(menuItem);
+                addItemToCart( menuItem);
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md"
               >

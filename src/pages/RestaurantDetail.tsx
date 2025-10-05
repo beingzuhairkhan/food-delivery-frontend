@@ -35,6 +35,7 @@ const RestaurantDetail = () => {
     variables: { name: restaurantName },
     skip: !restaurantName,
   });
+  // console.log("Dta",data)
   const { addItemToCart } = useCart();
 
   if (loading) return (
@@ -69,6 +70,7 @@ const RestaurantDetail = () => {
   );
 
   const restaurant = data?.restaurantByName;
+  // console.log("rest" , restaurant)
   
   if (!restaurant) return (
     <div className="min-h-screen bg-gray-50">
