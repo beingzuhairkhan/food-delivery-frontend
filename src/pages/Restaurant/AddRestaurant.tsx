@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GiKnifeFork } from 'react-icons/gi';
 import { addRestaurant } from '../../service/restaurant'
 const AddRestaurant = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     image: null as File | null,
@@ -13,6 +15,7 @@ const AddRestaurant = () => {
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, files } = e.target as any;
@@ -26,6 +29,7 @@ const AddRestaurant = () => {
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  setLoading(true);
 
   const form = new FormData();
   form.append('name', formData.name);
@@ -41,10 +45,15 @@ const AddRestaurant = () => {
   try {
     const res = await addRestaurant(form); // send FormData directly
     console.log('Restaurant added:', res);
-    alert('Restaurant saved successfully!');
+    alert('Restaurant saved successfully! Now add your menu items.');
+    
+    // Redirect to add-food-item page
+    navigate('/add-food-item');
   } catch (err) {
     console.error('Error saving restaurant:', err);
     alert('Failed to save restaurant.');
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -167,9 +176,10 @@ const AddRestaurant = () => {
         {/* Save Button */}
         <button
           type="submit"
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl hover:bg-orange-600 transition text-lg"
+          disabled={loading}
+          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl hover:bg-orange-600 transition text-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Save
+          {loading ? 'Saving...' : 'Save & Continue'}
         </button>
       </form>
     </div>

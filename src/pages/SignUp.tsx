@@ -42,10 +42,18 @@ const SignUp: React.FC = () => {
       setSuccess(response?.message);
       setLoading(false);
 
-      // Redirect to login after signup
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      // Check if user is restaurant owner
+      if (formData.role === 'restaurant') {
+        setSuccess('Account created! Redirecting to restaurant setup...');
+        setTimeout(() => {
+          navigate("/add-restaurant");
+        }, 1500);
+      } else {
+        // Redirect to login for other users
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || "Signup failed");
       setLoading(false);

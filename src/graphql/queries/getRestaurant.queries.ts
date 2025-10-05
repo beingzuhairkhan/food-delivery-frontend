@@ -1,9 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const GET_OWNER_RESTAURANT = gql`
-  query GetOwnerRestaurant($ownerId: ID!) {
-    restaurantByOwner(ownerId: $ownerId) {
-      _id
+export const GET_MY_RESTAURANT = gql`
+  query GetMyRestaurant {
+    myRestaurant {
       name
       image
       city
@@ -11,14 +10,6 @@ export const GET_OWNER_RESTAURANT = gql`
       address
       phone
       email
-      foodItems {
-        _id
-        name
-        price
-        type
-        category
-        image
-      }
     }
   }
 `;

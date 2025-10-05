@@ -41,6 +41,22 @@ const [loading, setLoading] = useState(true);
 
      const signup = async (data: any) => {
         const res = await api.post('/auth/signup', data);
+        
+        // If user is restaurant owner, automatically log them in
+        if (data.role === 'restaurant') {
+            const loginRes = await api.post('/auth/login', { 
+                email: data.email, 
+                password: data.password 
+            });
+            const { user } = loginRes.data;
+            const { accessToken, refreshToken } = loginRes.data.tokens;
+            
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('user', JSON.stringify(user));
+            setUser(user);
+        }
+        
         return res.data;
     };
 

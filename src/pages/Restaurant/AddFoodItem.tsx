@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GiKnifeFork } from "react-icons/gi";
 import axios from "axios";
 
 const API_URL = "http://localhost:3000"; // replace with your API URL
 
 const AddFoodItem: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     image: null as File | null,
@@ -12,6 +14,9 @@ const AddFoodItem: React.FC = () => {
     category: "",
     type: "veg",
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [showSkipButton, setShowSkipButton] = useState(true);
 
   // Handle input changes
   const handleChange = (
@@ -30,11 +35,13 @@ const AddFoodItem: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const { name, price, category, type, image } = formData;
 
     if (!name || !price || !category) {
       alert("⚠️ Please fill all required fields!");
+      setLoading(false);
       return;
     }
 
@@ -56,7 +63,7 @@ const AddFoodItem: React.FC = () => {
       });
 
       console.log("Food Item Added:", res.data);
-      alert(" Food Item Added Successfully!");
+      alert(" Food Item Added Successfully! Redirecting to your restaurant dashboard...");
 
       // Reset form
       setFormData({
@@ -66,10 +73,25 @@ const AddFoodItem: React.FC = () => {
         category: "",
         type: "veg",
       });
-    } catch (err) {
+      
+      // Hide skip button after first item is added
+      setShowSkipButton(false);
+      
+      // Redirect to restaurant dashboard after a short delay
+      setTimeout(() => {
+        navigate('/restaurant');
+      }, 1500);
+      
+    } catch (err: any) {
       console.error("❌ Error:", err.response?.data || err);
       alert("Failed to add food item. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSkipAndGoToDashboard = () => {
+    navigate('/restaurant');
   };
 
   return (
@@ -167,13 +189,26 @@ const AddFoodItem: React.FC = () => {
           </select>
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-transform transform hover:scale-[1.02]"
-        >
-          Save Food Item
-        </button>
+        {/* Submit Buttons */}
+        <div className="space-y-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-transform transform hover:scale-[1.02] disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {loading ? "Saving..." : "Save Food Item"}
+          </button>
+          
+          {showSkipButton && (
+            <button
+              type="button"
+              onClick={handleSkipAndGoToDashboard}
+              className="w-full bg-gray-500 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 transition-transform transform hover:scale-[1.02]"
+            >
+              Skip & Go to Dashboard
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
