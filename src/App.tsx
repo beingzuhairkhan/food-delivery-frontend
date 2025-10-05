@@ -12,6 +12,7 @@ import DeliveryDashboard from "./components/Dashboard/deliveryDashboard";
 import ProtectedRoute from './service/ProtectedRoute'
 import MyOrders from "./pages/Orders/Myorders";
 import RestaurantOrder from "./pages/Orders/RestaurantOrder";
+import RestaurantDetail from "./pages/RestaurantDetail";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['user']}>
             <MyOrders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/restaurant/:id"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <RestaurantDetail />
           </ProtectedRoute>
         }
       />
