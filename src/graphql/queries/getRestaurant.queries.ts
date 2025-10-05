@@ -69,3 +69,24 @@ export const GET_RESTAURANT_BY_NAME_WITH_FOOD_ITEMS = gql`
     }
   }
 `;
+
+export const GET_RECOMMENDED_ITEMS = gql`
+  query GetRecommendedItems {
+    recommendedItems {
+      _id
+      name
+      price
+      image
+      category
+      type
+      restaurant {
+        _id
+        name
+        image
+        city
+        state
+        address
+      }
+    }
+  }
+`;

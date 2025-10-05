@@ -1,49 +1,55 @@
 import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useQuery } from "@apollo/client/react";
-import { GET_MENU_ITEMS } from "../../graphql/queries/menu.graphql.ts";
+import { GET_RECOMMENDED_ITEMS } from "../../graphql/queries/getRestaurant.queries.ts";
 import { useCart } from "../../contexts/CartContext.tsx";
 
-interface MenuItem {
-  id: string;
+interface Restaurant {
+  _id: string;
   name: string;
-  description: string;
-  price: number;
-  category: string;
-  imageUrl: string;
-  isVegetarian: boolean;
-  isVegan: boolean;
-  isGlutenFree: boolean;
-  isAvailable: boolean;
+  image: string;
+  city?: string;
+  state?: string;
+  address: string;
 }
 
-interface MenuItemsData {
-  menuItems: MenuItem[];
+interface RecommendedItem {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  type?: string;
+  restaurant: Restaurant;
+}
+
+interface RecommendedItemsData {
+  recommendedItems: RecommendedItem[];
 }
 
 const SuggestedItems = () => {
-  const { loading, error, data } = useQuery<MenuItemsData>(GET_MENU_ITEMS);
+  const { loading, error, data } = useQuery<RecommendedItemsData>(GET_RECOMMENDED_ITEMS);
   const { addItemToCart } = useCart();
 
   if (loading) return (
     <div className="my-10 px-4 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Suggested Items</h2>
+      <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
       <div className="flex justify-center items-center h-32">
-        <div className="text-lg text-gray-600">Loading suggested items...</div>
+        <div className="text-lg text-gray-600">Loading recommended items...</div>
       </div>
     </div>
   );
 
   if (error) return (
     <div className="my-10 px-4 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Suggested Items</h2>
+      <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
       <div className="flex justify-center items-center h-32">
         <div className="text-lg text-red-600">Error loading items: {error.message}</div>
       </div>
     </div>
   );
 
-  // Filter only available items and limit to 6 for suggested items
-  const availableItems = data?.menuItems?.filter((item: MenuItem) => item.isAvailable)?.slice(0, 6) || [];
+  // Get recommended items (already limited to 2 per restaurant)
+  const availableItems = data?.recommendedItems || [];
 
   return (
     <div className="w-full">
@@ -58,27 +64,27 @@ const SuggestedItems = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {availableItems.map((item: MenuItem) => (
+        {availableItems.map((item: RecommendedItem) => (
           <div
-            key={item.id}
+            key={item._id}
             className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 overflow-hidden"
           >
             {/* Food Image */}
             <div className="relative overflow-hidden rounded-t-2xl">
               <img
-                src={item.imageUrl}
+                src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop&crop=center'}
                 alt={item.name}
                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute top-3 left-3">
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    item.isVegetarian 
+                    item.type === 'veg' 
                       ? "bg-green-100 text-green-700 border border-green-200" 
                       : "bg-red-100 text-red-700 border border-red-200"
                   }`}
                 >
-                  {item.isVegetarian ? "🟢 Veg" : "🔴 Non-Veg"}
+                  {item.type === 'veg' ? "🟢 Veg" : "🔴 Non-Veg"}
                 </span>
               </div>
               <div className="absolute top-3 right-3">
@@ -101,14 +107,30 @@ const SuggestedItems = () => {
                 </p>
               </div>
 
-              {/* Description */}
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                {item.description || "Delicious and freshly prepared"}
-              </p>
+              {/* Restaurant Info */}
+              <div className="mb-3">
+                <p className="text-sm text-gray-500">
+                  From <span className="font-medium text-gray-700">{item.restaurant.name}</span>
+                </p>
+                <p className="text-xs text-gray-400">
+                  {item.restaurant.city}, {item.restaurant.state}
+                </p>
+              </div>
 
               {/* Add to Cart Button */}
               <button 
-                onClick={() => addItemToCart(item)}
+                onClick={() => {
+                  const menuItem = {
+                    id: item._id,
+                    name: item.name,
+                    price: item.price,
+                    category: item.category,
+                    imageUrl: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop&crop=center',
+                    isVegetarian: item.type === 'veg',
+                    isAvailable: true
+                  };
+                  addItemToCart(menuItem);
+                }}
                 className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md"
               >
                 <FaShoppingCart className="text-sm" />
