@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GiKnifeFork } from 'react-icons/gi';
-
+import { addRestaurant } from '../../service/restaurant'
 const AddRestaurant = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,12 +24,29 @@ const AddRestaurant = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(formData);
-    alert('Restaurant saved!');
-    // Call API here
-  };
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const form = new FormData();
+  form.append('name', formData.name);
+  form.append('city', formData.city);
+  form.append('state', formData.state);
+  form.append('address', formData.address);
+  form.append('phone', formData.phone);
+  form.append('email', formData.email);
+  if (formData.image) {
+    form.append('image', formData.image);
+  }
+
+  try {
+    const res = await addRestaurant(form); // send FormData directly
+    console.log('Restaurant added:', res);
+    alert('Restaurant saved successfully!');
+  } catch (err) {
+    console.error('Error saving restaurant:', err);
+    alert('Failed to save restaurant.');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">

@@ -10,6 +10,7 @@ import { GET_MENU_ITEMS } from './graphql/queries/menu.graphql.ts';
 
 
 import { CartProvider } from './contexts/CartContext.tsx';
+import { AuthProvider } from './contexts/AuthContext.tsx';
 
 
 // 1. Define the mock menu items data (reusable)
@@ -226,13 +227,14 @@ const mocks = [
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      {/* 2. Use MockedProvider instead of ApolloProvider */}
-      <MockedProvider mocks={mocks}>
-        <CartProvider>
-
-        <App />
-        </CartProvider>
-      </MockedProvider>
+      <AuthProvider>
+        {/* 2. Use MockedProvider instead of ApolloProvider */}
+        <MockedProvider mocks={mocks}>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </MockedProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

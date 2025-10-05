@@ -3,11 +3,11 @@ import { Search, ShoppingCart, MapPin, User, LogOut, Menu, X } from "lucide-reac
 import useGeolocation from '../../hooks/useGeolocation'
 import { Link } from "react-router-dom";
 import { useCart } from '../../contexts/CartContext.tsx';
-
+import { useAuth } from "../../contexts/AuthContext.tsx";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const {logout , user} = useAuth()
   // use custom geolocation hook
   const location = useGeolocation();
 
@@ -84,7 +84,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 p-2 md:px-4 md:py-2 rounded-full hover:bg-gray-100 transition-all duration-200 group"
               >
                 <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  Z
+                  {user?.name?.slice(0,1)}
                 </div>
                 <span className="hidden md:block font-medium text-gray-700 group-hover:text-green-600 transition-colors">
                   Account
@@ -105,11 +105,11 @@ const Navbar = () => {
                     <div className="p-4 border-b border-gray-100">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center text-white font-semibold">
-                          Z
+                            {user?.name?.slice(0,1)}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">Zuhair Khan</p>
-                          <p className="text-sm text-gray-500">zuhair@example.com</p>
+                          <p className="font-semibold text-gray-900">{user?.name}</p>
+                          <p className="text-sm text-gray-500">{user?.email}</p>
                         </div>
                       </div>
                     </div>
@@ -119,8 +119,17 @@ const Navbar = () => {
                         <User className="w-4 h-4" />
                         <span>Profile Settings</span>
                       </button>
+                      <Link to="/myorders" >
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors">
+                        <ShoppingCart  className="w-4 h-4" />
+                        <span>My Orders</span>
+                      </button>
+                      </Link>
+
                       
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                      onClick={logout}
+                      >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
                       </button>

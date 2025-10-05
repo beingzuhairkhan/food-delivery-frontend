@@ -4,6 +4,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import useGeolocation from "../hooks/useGeolocation";
 import { FaLocationDot } from "react-icons/fa6";
+import PaymentMethod from "../components/payment/paymentMethod";
+import OrderSummary from "../components/payment/orderSummary";
 // Fix default Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -24,7 +26,7 @@ const LocationMarker = ({
   const [position, setLocalPosition] = useState<[number, number] | null>(null);
 
   useMapEvents({
-    click(e) {
+    click(e:any) {
       const newPos: [number, number] = [e.latlng.lat, e.latlng.lng];
       setLocalPosition(newPos);
       setPosition(newPos);
@@ -54,7 +56,7 @@ const Checkout = () => {
   }, [location]);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-xl mx-auto px-4 py-8 bg-gray-100 mt-4 rounded-2xl">
       <h2 className="text-2xl font-bold mb-6">Checkout</h2>
 
       {/* Delivery Address Input */}
@@ -64,15 +66,15 @@ const Checkout = () => {
         </label>
         <input
           type="text"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          // value={address}
+          // onChange={(e) => setAddress(e.target.value)}
           placeholder="123, Main Street, City, State"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* Leaflet Map */}
-      <div className="h-96 w-full rounded-lg overflow-hidden shadow-md">
+      <div className="h-56 w-full rounded-lg overflow-hidden shadow-md">
         {coords && (
           <MapContainer
             center={[coords.lat, coords.lon]}
@@ -88,7 +90,8 @@ const Checkout = () => {
           </MapContainer>
         )}
       </div>
-
+      <PaymentMethod/>
+      <OrderSummary/>
     </div>
   );
 };
