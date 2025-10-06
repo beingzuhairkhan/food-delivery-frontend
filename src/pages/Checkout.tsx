@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import useGeolocation from "../hooks/useGeolocation";
-import { FaLocationDot } from "react-icons/fa6";
-import PaymentMethod from "../components/payment/paymentMethod";
-import OrderSummary from "../components/payment/orderSummary";
+import React, { useState, useEffect } from 'react';
+import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import useGeolocation from '../hooks/useGeolocation';
+import { FaLocationDot } from 'react-icons/fa6';
+import PaymentMethod from '../components/payment/paymentMethod';
+import OrderSummary from '../components/payment/orderSummary';
 // Fix default Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
 // Component to handle marker placement on map click
@@ -26,7 +23,7 @@ const LocationMarker = ({
   const [position, setLocalPosition] = useState<[number, number] | null>(null);
 
   useMapEvents({
-    click(e:any) {
+    click(e: any) {
       const newPos: [number, number] = [e.latlng.lat, e.latlng.lng];
       setLocalPosition(newPos);
       setPosition(newPos);
@@ -39,9 +36,7 @@ const LocationMarker = ({
 const Checkout = () => {
   const { location, coords } = useGeolocation();
   const [address, setAddress] = useState(location);
-  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
-    null
-  );
+  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
 
   // Set initial marker to user's location once coords are available
   useEffect(() => {
@@ -61,9 +56,7 @@ const Checkout = () => {
 
       {/* Delivery Address Input */}
       <div className="mb-6">
-        <label className="block text-gray-700 font-medium mb-2">
-          Enter your delivery address
-        </label>
+        <label className="block text-gray-700 font-medium mb-2">Enter your delivery address</label>
         <input
           type="text"
           // value={address}
@@ -90,8 +83,8 @@ const Checkout = () => {
           </MapContainer>
         )}
       </div>
-      <PaymentMethod/>
-      <OrderSummary/>
+      <PaymentMethod />
+      <OrderSummary />
     </div>
   );
 };

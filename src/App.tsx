@@ -1,18 +1,20 @@
-import { Route, Routes } from "react-router-dom";
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
-import Home from "./pages/Home";
-import AddRestaurant from "./pages/Restaurant/AddRestaurant";
-import AddFoodItem from "./pages/Restaurant/AddFoodItem";
-import EditFoodItem from "./pages/Restaurant/EditFoodItem";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import OwnerDashboard from "./components/Dashboard/ownerDashboard";
-import DeliveryDashboard from "./components/Dashboard/deliveryDashboard";
-import ProtectedRoute from './service/ProtectedRoute'
-import MyOrders from "./pages/Orders/Myorders";
-import RestaurantOrder from "./pages/Orders/RestaurantOrder";
-import RestaurantDetail from "./pages/RestaurantDetail";
+import { Route, Routes } from 'react-router-dom';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+import Home from './pages/Home';
+import AddRestaurant from './pages/Restaurant/AddRestaurant';
+import AddFoodItem from './pages/Restaurant/AddFoodItem';
+import EditFoodItem from './pages/Restaurant/EditFoodItem';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OwnerDashboard from './components/Dashboard/ownerDashboard';
+import DeliveryDashboard from './components/Dashboard/deliveryDashboard';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailure from './pages/PaymentFailure';
+import ProtectedRoute from './service/ProtectedRoute';
+import MyOrders from './pages/Orders/Myorders';
+import RestaurantOrder from './pages/Orders/RestaurantOrder';
+import RestaurantDetail from './pages/RestaurantDetail';
 
 function App() {
   return (
@@ -59,6 +61,24 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['user']}>
             <RestaurantDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Payment result routes - accessible to users */}
+      <Route
+        path="/payment-success"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment-failure"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <PaymentFailure />
           </ProtectedRoute>
         }
       />
@@ -119,7 +139,6 @@ function App() {
 }
 
 export default App;
-
 
 // export default App;
 // import { Route, Routes } from "react-router-dom"
