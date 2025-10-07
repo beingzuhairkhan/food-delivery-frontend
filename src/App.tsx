@@ -15,6 +15,7 @@ import ProtectedRoute from './service/ProtectedRoute';
 import MyOrders from './pages/Orders/Myorders';
 import RestaurantOrder from './pages/Orders/RestaurantOrder';
 import RestaurantDetail from './pages/RestaurantDetail';
+import CategoryItems from './pages/CategoryItems';
 import Wallet from './pages/Wallet';
 
 function App() {
@@ -70,6 +71,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['user']}>
             <RestaurantDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/category/:categoryId"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <CategoryItems />
           </ProtectedRoute>
         }
       />

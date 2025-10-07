@@ -1,24 +1,14 @@
-
-
-const categories = [
-  { name: "Sweets", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Main Course", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Desserts", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Pizza", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Burgers", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Sandwiches", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-   { name: "Sweets", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Main Course", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Desserts", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Pizza", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Burgers", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-  { name: "Sandwiches", image: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Food-best-hd-photos.jpg" },
-];
+import { useNavigate } from 'react-router-dom';
+import { getCategories } from '../../data/dummyData';
 
 const Category = () => {
-  // Remove duplicates and limit to unique categories
-  const uniqueCategories = categories.slice(0, 6);
-  
+  const navigate = useNavigate();
+  const categories = getCategories();
+
+  const handleCategoryClick = (categoryId: string) => {
+    navigate(`/category/${categoryId}`);
+  };
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-8">
@@ -27,11 +17,12 @@ const Category = () => {
           <p className="text-gray-600">Find your favorite type of cuisine</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-        {uniqueCategories.map((category, index) => (
+        {categories.map((category) => (
           <div
-            key={index}
+            key={category.id}
+            onClick={() => handleCategoryClick(category.id)}
             className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer overflow-hidden"
           >
             <div className="aspect-square relative overflow-hidden rounded-t-2xl">
@@ -46,6 +37,7 @@ const Category = () => {
               <h3 className="font-semibold text-gray-900 text-sm md:text-base group-hover:text-green-600 transition-colors duration-300">
                 {category.name}
               </h3>
+              <p className="text-xs text-gray-500 mt-1">{category.description}</p>
             </div>
           </div>
         ))}

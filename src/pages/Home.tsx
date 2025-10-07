@@ -1,11 +1,10 @@
-import React from 'react'
-import UserDashboard from '../components/Dashboard/userDashboard'
+import UserDashboard from '../components/Dashboard/userDashboard';
 const Home = () => {
   return (
     <div>
-        <UserDashboard/>
+      <UserDashboard />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
