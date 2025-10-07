@@ -9,6 +9,7 @@ import client from './service/graphql';
 
 import { CartProvider } from './contexts/CartContext.tsx';
 import { AuthProvider } from './contexts/AuthContext.tsx';
+import { WalletProvider } from './contexts/WalletContext';
 
 
 
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
         {/* Use ApolloProvider to connect to real backend */}
         <ApolloProvider client={client}>
           <CartProvider>
-            <App />
+            <WalletProvider>
+              <App />
+            </WalletProvider>
           </CartProvider>
         </ApolloProvider>
       </AuthProvider>

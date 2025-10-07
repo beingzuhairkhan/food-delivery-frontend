@@ -6,6 +6,8 @@ import useGeolocation from '../hooks/useGeolocation';
 import { FaLocationDot } from 'react-icons/fa6';
 import PaymentMethod from '../components/payment/paymentMethod';
 import OrderSummary from '../components/payment/orderSummary';
+
+type Method = 'cod' | 'upi' | 'wallet';
 // Fix default Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -37,6 +39,7 @@ const Checkout = () => {
   const { location, coords } = useGeolocation();
   const [address, setAddress] = useState(location);
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
+  const [method, setMethod] = useState<Method>('wallet');
 
   // Set initial marker to user's location once coords are available
   useEffect(() => {
@@ -83,8 +86,8 @@ const Checkout = () => {
           </MapContainer>
         )}
       </div>
-      <PaymentMethod />
-      <OrderSummary />
+      <PaymentMethod selected={method} onChange={setMethod} />
+      <OrderSummary selectedMethod={method} />
     </div>
   );
 };

@@ -39,7 +39,7 @@ const PaymentSuccess: React.FC = () => {
   };
 
   const handleViewOrders = () => {
-    navigate('/orders'); // Assuming you have an orders page
+    navigate('/myorders');
   };
 
   if (loading) {

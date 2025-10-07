@@ -4,6 +4,7 @@ import useGeolocation from '../../hooks/useGeolocation'
 import { Link } from "react-router-dom";
 import { useCart } from '../../contexts/CartContext.tsx';
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import { useWallet } from "../../contexts/WalletContext";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,6 +15,7 @@ const Navbar = () => {
   // use cart context
   const { getItemCount } = useCart();
   const itemCount = getItemCount();
+  const { balance } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
@@ -126,7 +128,13 @@ const Navbar = () => {
                       </button>
                       </Link>
 
-                      
+                      <Link to="/wallet">
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors">
+                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-purple-600 text-white text-[10px]">₹</span>
+                        <span>Wallet (₹{balance.toFixed(2)})</span>
+                      </button>
+                      </Link>
+
                       <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                       onClick={logout}
                       >

@@ -18,6 +18,9 @@ const Cart = () => {
     };
 
     const totalAmount = getCartTotal();
+    const sgst = +(totalAmount * 0.025).toFixed(2);
+    const cgst = +(totalAmount * 0.025).toFixed(2);
+    const grandTotal = +(totalAmount + sgst + cgst).toFixed(2);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -155,13 +158,17 @@ const Cart = () => {
                                         <span className="text-green-600">Free</span>
                                     </div>
                                     <div className="flex justify-between text-gray-600">
-                                        <span>Taxes & Fees</span>
-                                        <span>₹{(totalAmount * 0.05).toFixed(2)}</span>
+                                        <span>SGST (2.5%)</span>
+                                        <span>₹{sgst.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>CGST (2.5%)</span>
+                                        <span>₹{cgst.toFixed(2)}</span>
                                     </div>
                                     <hr className="border-gray-200" />
                                     <div className="flex justify-between text-xl font-bold text-gray-900">
                                         <span>Total</span>
-                                        <span>₹{(totalAmount * 1.05).toFixed(2)}</span>
+                                        <span>₹{grandTotal.toFixed(2)}</span>
                                     </div>
                                 </div>
 

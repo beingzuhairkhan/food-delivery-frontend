@@ -15,6 +15,7 @@ import ProtectedRoute from './service/ProtectedRoute';
 import MyOrders from './pages/Orders/Myorders';
 import RestaurantOrder from './pages/Orders/RestaurantOrder';
 import RestaurantDetail from './pages/RestaurantDetail';
+import Wallet from './pages/Wallet';
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['user']}>
             <MyOrders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wallet"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <Wallet />
           </ProtectedRoute>
         }
       />

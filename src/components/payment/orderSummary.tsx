@@ -20,43 +20,94 @@ interface CartItem {
   foodId: string;
 }
 
-export const OrderSummary = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../contexts/CartContext';
+import { useWallet } from '../../contexts/WalletContext';
+
+type Method = 'cod' | 'upi' | 'wallet';
+
+export const OrderSummary = ({ selectedMethod }: { selectedMethod: Method }) => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { cartItems, clearCart } = useCart();
+  const { balance, canAfford, spend } = useWallet();
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cartData');
-    console.log('d', storedCart);
-    if (storedCart) {
-      try {
-        setCartItems(JSON.parse(storedCart));
-      } catch (error) {
-        console.error('Error parsing cartData:', error);
-      }
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const sgst = +(subtotal * 0.025).toFixed(2);
+  const cgst = +(subtotal * 0.025).toFixed(2);
+  const total = +(subtotal + sgst + cgst).toFixed(2);
+
+  // 🔹 Wallet-based order placement (mock, frontend-only)
+  const handleWalletOrder = async () => {
+    if (cartItems.length === 0) return alert('Your cart is empty!');
+    const grandTotal = total;
+
+    if (!canAfford(grandTotal)) {
+      alert(`Insufficient wallet balance (₹${balance.toFixed(2)}). Please top up in Wallet.`);
+      return;
     }
-  }, []);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    try {
+      setLoading(true);
+      // Deduct from wallet
+      const ok = spend(grandTotal);
+      if (!ok) {
+        alert('Could not deduct from wallet.');
+        return;
+      }
 
-  // 🔹 Payment & Order API call
+      // Persist order locally
+      const existing = localStorage.getItem('orders');
+      const orders = existing ? JSON.parse(existing) : [];
+      const orderId = `WALLET-${Date.now()}`;
+      const orderRecord = {
+        id: orderId,
+        items: cartItems.map((i) => ({ name: i.name, qty: i.quantity, total: +(i.price * i.quantity).toFixed(2) })),
+        total: grandTotal,
+        status: 'Paid',
+        paymentMethod: 'wallet',
+        date: new Date().toISOString(),
+      };
+      orders.push(orderRecord);
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Clear cart
+      localStorage.removeItem('cartData');
+      clearCart();
+
+      // Navigate to My Orders page (mock wallet flow)
+      navigate('/myorders');
+    } catch (e) {
+      console.error('Wallet order error:', e);
+      alert('Something went wrong placing the order.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Payment & Order API call (backend flow) — retained for non-wallet methods
   const handlePayment = async () => {
     if (cartItems.length === 0) return alert('Your cart is empty!');
     console.log('Initiating payment for cart items:', cartItems);
 
     try {
       setLoading(true);
+      if (selectedMethod === 'wallet') {
+        await handleWalletOrder();
+        return;
+      }
+
       // Prepare payload for backend - send all cart items
       const payload = {
         items: cartItems.map((item) => ({
-          foodId: item.foodId,
-          name: item.foodName,
-          quantity: item.count,
-          price: item.totalPrice / item.count,
-          totalPrice: item.totalPrice,
-          userId: item.userId,
+          foodId: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          totalPrice: +(item.price * item.quantity).toFixed(2),
         })),
-        totalAmount: subtotal,
-        userId: cartItems[0].userId, // Assuming all items belong to the same user
+        totalAmount: total,
       };
       const token = localStorage.getItem('accessToken');
       const res = await fetch('http://localhost:3000/payments/create-order', {
@@ -130,21 +181,27 @@ export const OrderSummary = () => {
           {cartItems.map((item, index) => (
             <p key={index} className="flex justify-between">
               <span>
-                {item.foodName} x {item.count}
+                {item.name} x {item.quantity}
               </span>
-              <span>₹{item.totalPrice}</span>
+              <span>₹{(item.price * item.quantity).toFixed(2)}</span>
             </p>
           ))}
 
           <hr />
           <p className="flex justify-between font-medium">
-            <span>Subtotal</span> <span>₹{subtotal}</span>
+            <span>Subtotal</span> <span>₹{subtotal.toFixed(2)}</span>
+          </p>
+          <p className="flex justify-between">
+            <span>SGST (2.5%)</span> <span>₹{sgst.toFixed(2)}</span>
+          </p>
+          <p className="flex justify-between">
+            <span>CGST (2.5%)</span> <span>₹{cgst.toFixed(2)}</span>
           </p>
           <p className="flex justify-between">
             <span>Delivery Fee</span> <span className="text-green-600">Free</span>
           </p>
           <p className="flex justify-between font-bold text-lg text-red-600">
-            <span>Total</span> <span>₹{subtotal}</span>
+            <span>Total</span> <span>₹{total.toFixed(2)}</span>
           </p>
         </div>
       ) : (
@@ -156,7 +213,11 @@ export const OrderSummary = () => {
         disabled={loading}
         className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-70"
       >
-        {loading ? 'Processing...' : 'Pay & Place Order'}
+        {loading
+          ? 'Processing...'
+          : selectedMethod === 'wallet'
+          ? 'Pay with Wallet & Place Order'
+          : 'Pay & Place Order'}
       </button>
     </div>
   );

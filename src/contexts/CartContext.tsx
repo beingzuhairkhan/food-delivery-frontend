@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import useGeolocation from '../hooks/useGeolocation'
@@ -97,6 +97,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    try {
+      localStorage.removeItem('cartData');
+    } catch (e) {
+      // ignore
+    }
   };
 
   const getCartTotal = () => {
@@ -106,6 +111,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getItemCount = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
+
+  // Keep localStorage cartData in sync with cartItems
+  useEffect(() => {
+    try {
+      if (cartItems.length === 0) {
+        localStorage.removeItem("cartData");
+      } else {
+        const simplifiedCart = cartItems.map(item => ({
+          foodName: item.name,
+          count: item.quantity,
+          totalPrice: item.price * item.quantity,
+          userId: user?._id,
+          foodId: item.id
+        }));
+        localStorage.setItem("cartData", JSON.stringify(simplifiedCart));
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [cartItems, user?._id]);
 
   return (
     <CartContext.Provider value={{ 
